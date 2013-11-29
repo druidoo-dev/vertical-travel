@@ -41,7 +41,7 @@ Contributors
     'external_dependencies': {},
     'data': [
         'data/airline_data.xml',
-        'partner_view.xml',
+        'res_partner_view.xml',
     ],
     'demo': [],
     'test': [],
