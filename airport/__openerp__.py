@@ -21,11 +21,11 @@
 ##############################################################################
 
 {
-    'name': 'Partner airport',
+    'name': 'Partner Airport',
     'version': '0.1',
     'category': 'Customer Relationship Management',
     'description': """
-Partner airport
+Partner Airport
 ===============
 This module allows to add :
 * airport : boolean
@@ -42,8 +42,7 @@ Contributors
     'depends': ['crm', 'transportation', ],
     'external_dependencies': {},
     'data': [
-        'data/airport_data.xml',
-        'partner_view.xml',
+        'res_partner_view.xml',
     ],
     'demo': [],
     'test': [],
