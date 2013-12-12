@@ -33,7 +33,6 @@ class travel_passenger(orm.Model):
                                         help="Name of Passenger."),
         'travel_id': fields.many2one('travel.travel', 'Travel',
                                      help='Travel on which the passenger is going.'),
-        'department_id': fields.many2one('hr.department', 'Department'),
     }
 
     def name_get(self, cr, uid, ids, context=None):
