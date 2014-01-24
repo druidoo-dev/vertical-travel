@@ -43,10 +43,7 @@ class Base_Test_travel(TransactionCase):
                      }
         super(Base_Test_travel, self).setUp()
         # Create the city; we're not testing city, so we don't store in self
-        res_country_city = self.registry('res.country.city')
-        self.vals['city_id'] = res_country_city.create(self.cr, self.uid, {
-            'name': 'Test City',
-            'country_id': 1, }, context=None)
+        res_better_zip = self.registry('res.better.zip')
         # Overwrite vals if needed
         self.vals = dict(self.vals.items() + vals.items())
         # Create the travel object; we will be testing this, so store in self
@@ -81,11 +78,11 @@ class Test_travel_bad(Base_Test_travel):
         """
         super(Test_travel_bad, self).setUp()
         # Change vals to something wrong
-        self.vals = {'name': 'This is the wrong travel name',
-                     'city_id': 0,
-                     'date_start': date(1999, 11, 14),
-                     'date_stop': date(1999, 11, 21),
-                     }
+        self.vals = {
+            'name': 'This is the wrong travel name',
+            'date_start': date(1999, 11, 14),
+            'date_stop': date(1999, 11, 21),
+        }
 
     def test_travel(self):
         """
