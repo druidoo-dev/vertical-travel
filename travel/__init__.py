@@ -20,6 +20,8 @@
 #
 ##############################################################################
 
-from . import travel
-from . import travel_passenger
-from . import res_config
+from . import (
+    travel,
+    travel_passenger,
+    res_config,
+)
