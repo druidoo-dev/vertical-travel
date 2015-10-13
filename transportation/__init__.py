@@ -17,34 +17,5 @@
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 ##############################################################################
-
-{
-    'name': 'Transportation',
-    'version': '0.1',
-    'category': 'Customer Relationship Management',
-    'description': """
-Transportation
-==============
-This module allows to add :
-* transportation notebook
-
-Contributors
-------------
-* Sandy Carter (sandy.carter@savoirfairelinux.com)
-* El Hadji Dem (elhadji.dem@savoirfairelinux.com)
-    """,
-    'author': "Savoir-faire Linux,Odoo Community Association (OCA)",
-    'website': 'http://www.savoirfairelinux.com',
-    'license': 'AGPL-3',
-    'depends': [],
-    'external_dependencies': {},
-    'data': [
-        'res_partner_view.xml',
-    ],
-    'demo': [],
-    'test': [],
-    'installable': False,
-    'auto_install': False,
-    'images': [],
-}
