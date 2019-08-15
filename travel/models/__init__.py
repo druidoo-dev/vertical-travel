@@ -1,7 +1,4 @@
-# -*- encoding: utf-8 -*-
-
-from . import (
-    travel,
-    travel_passenger,
-    res_config,
-)
+from . import travel
+from . import travel_stage
+from . import travel_tag
+from . import travel_passenger
