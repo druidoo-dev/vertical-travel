@@ -1,0 +1,12 @@
+<?xml version = "1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_travel_form" model="ir.ui.view">
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page name="travel" string="Travel" attrs="{'invisible': [('is_company', '=', False)]}"/>
+            </notebook>
+        </field>
+    </record>
+</odoo>
