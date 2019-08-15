@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
   <data noupdate="1">
     <record forcecreate="True" id="1" model="res.partner">
       <field name="name">Private flight</field>
@@ -35876,4 +35876,4 @@
       <field name="customer" eval="0"/>
     </record>
   </data>
-</openerp>
+</odoo>
