@@ -28,40 +28,158 @@
                             <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
                         </button>
                     </div>
-
-                    <div class="oe_title">
-                        <label for="name"/>
-                        <h1><field name="name"/></h1>
+                    <div class="oe_title pr-0">
+                        <h1 class="d-flex flex-row">
+                            <field name="priority" widget="priority" class="mr-3"/>
+                            <field name="name" class="o_task_name text-truncate" placeholder="Title..."/>
+                        </h1>
                     </div>
-
                     <group>
                         <group>
                             <field name="date_start"/>
                             <field name="date_stop"/>
                         </group>
                         <group>
-                            <field name="city_ids" widget="many2many_tags"/>
                             <field name="tag_ids" widget="many2many_tags"/>
+                            <field name="city_ids" widget="many2many_tags"/>
                         </group>
                     </group>
-
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                        </group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                        </group>
+                    </group>
                     <notebook>
                         <page name="passengers" string="Passengers">
                             <field name="passenger_ids">
                                 <tree editable="bottom">
                                     <field name="partner_id"/>
                                 </tree>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="partner_id"/>
+                                            </group>
+                                        </group>
+                                    </sheet>
+                                </form>
                             </field>
                         </page>
                     </notebook>
                 </sheet>
-
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
                     <field name="activity_ids" widget="mail_activity"/>
                     <field name="message_ids" widget="mail_thread"/>
                 </div>
             </form>
+        </field>
+    </record>
+
+
+    <record id="view_travel_search" model="ir.ui.view">
+        <field name="model">travel.travel</field>
+        <field name="arch" type="xml">
+           <search>
+                <field name="name"/>
+                <field name="tag_ids"/>
+                <field name="user_id"/>
+                <field name="stage_id"/>
+                <filter string="My Travels" name="mine" domain="[('user_id','=',uid)]"/>
+                <filter string="My Followed Travels" name="followed" domain="[('message_is_follower', '=', True)]" />
+                <filter string="Unassigned" name="unassigned" domain="[('user_id', '=', False)]"/>
+                <separator/>
+                <filter string="Starred" name="starred" domain="[('priority','in',[1, 2])]"/>
+                <separator/>
+                <filter string="Unread Messages" name="message_needaction" domain="[('message_needaction','=',True)]"/>
+                <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                <separator/>
+                <filter string="My Activities" name="activities_my" domain="[('activity_ids.user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Late Activities" name="activities_overdue"
+                    domain="[('activity_ids.date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
+                    help="Show all records which has next action date is before today"/>
+                <filter string="Today Activities" name="activities_today"
+                    domain="[('activity_ids.date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Future Activities" name="activities_upcoming_all"
+                    domain="[('activity_ids.date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))
+                    ]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Assigned to" name="user" context="{'group_by':'user_id'}"/>
+                    <filter string="Stage" name="stage" context="{'group_by':'stage_id'}"/>
+                    <filter string="Company" name="company" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_project_kanban">
+        <field name="model">travel.travel</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="stage_id" class="oe_background_grey o_kanban_dashboard o_project_kanban o_emphasize_colors">
+                <field name="name"/>
+                <field name="color"/>
+                <field name="priority"/>
+                <field name="partner_id"/>
+                <field name="date_start"/>
+                <field name="date_stop"/>
+                <field name="tag_ids"/>
+                <field name="stage_id"/>
+                <field name="message_needaction_counter"/>
+                <field name="user_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title"><field name="name"/></strong><br/>
+                                        <span t-if="record.partner_id.value">
+                                            <strong><t t-esc="record.partner_id.value"/></strong><br/>
+                                        </span>
+                                        <small class="o_kanban_record_subtitle text-muted">
+                                            <span><i><field name="date_start"/></i></span>
+                                        </small>
+                                    </div>
+                                    <div class="o_dropdown_kanban dropdown" groups="base.group_user">
+                                        <a role="button" class="dropdown-toggle o-no-caret btn" data-toggle="dropdown" data-display="static" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                            <span class="fa fa-ellipsis-v"/>
+                                        </a>
+                                        <div class="dropdown-menu" role="menu">
+                                            <!--<a name="%(portal.portal_share_action)d" role="menuitem" type="action" class="dropdown-item">Share</a>-->
+                                            <a t-if="widget.editable" role="menuitem" type="edit" class="dropdown-item">Edit</a>
+                                            <a t-if="widget.deletable" role="menuitem" type="delete" class="dropdown-item">Delete</a>
+                                            <div role="separator" class="dropdown-divider"></div>
+                                            <ul class="oe_kanban_colorpicker" data-field="color"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="priority" widget="priority"/>
+                                        <field name="activity_ids" widget="kanban_activity"/>
+                                        <t t-if="record.message_needaction_counter.raw_value">
+                                            <span role="alert" class='oe_kanban_mail_new' title='Unread Messages'><i class='fa fa-comments' role="img" aria-label="Unread Messages"/><t t-raw="record.message_needaction_counter.raw_value"/></span>
+                                        </t>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <img t-att-src="kanban_image('res.users', 'image_small', record.user_id.raw_value)" t-att-title="record.user_id.value" t-att-alt="record.user_id.value" width="24" height="24" class="oe_kanban_avatar"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="oe_clear"></div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
         </field>
     </record>
 
@@ -78,9 +196,8 @@
     <!-- Actions -->
     <record model="ir.actions.act_window" id="action_travels_tree_list">
         <field name="name">Travels</field>
-        <field name="view_id" ref="travel_tree_view"/>
         <field name="res_model">travel.travel</field>
-        <field name="view_mode">tree,form,calendar</field>
+        <field name="view_mode">kanban,tree,form,calendar,activity</field>
     </record>
 
     <!-- Menus -->
@@ -89,16 +206,21 @@
               groups="travel.group_user"/>
 
     <menuitem name="Travel"
-              id="menu_travel_main_form"
+              id="menu_travel"
               parent="menu_top_travel" />
 
     <menuitem name="Travels"
-              id="menu_travels"
-              parent="menu_travel_main_form"
+              id="menu_travel_travel"
+              parent="menu_travel"
               action="action_travels_tree_list"/>
 
-    <menuitem id="menu_travel_report"
+    <menuitem id="menu_report"
               name="Reports"
+              parent="menu_top_travel"/>
+
+    <menuitem id="menu_config"
+              name="Configuration"
+              groups="travel.group_manager"
               parent="menu_top_travel"/>
 
 </odoo>

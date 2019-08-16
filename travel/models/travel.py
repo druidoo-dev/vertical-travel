@@ -12,12 +12,34 @@ class Travel(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _date_name = "date_start"
 
+    @api.model
+    def _read_group_stage_ids(self, stages, domain, order):
+        return stages.search([], order=order)
+
     name = fields.Char(required=True)
     description = fields.Html()
 
     active = fields.Boolean(default=True)
 
     tag_ids = fields.Many2many('travel.tag', string='Tags')
+
+    color = fields.Integer(string='Color Index')
+    priority = fields.Selection([
+        ('0', 'Low'),
+        ('1', 'Normal'),
+        ],
+        string="Priority",
+        default='0',
+        index=True,
+    )
+
+    company_id = fields.Many2one(
+        'res.company',
+        string='Company',
+        required=True,
+        default=lambda self: self.env.user.company_id,
+    )
+    currency_id = fields.Many2one(related="company_id.currency_id")
 
     date_start = fields.Date('Start Date', required=True)
     date_stop = fields.Date('End Date', required=True)
@@ -40,6 +62,19 @@ class Travel(models.Model):
         ondelete='restrict',
         default=lambda self: self.env['travel.stage'].search(
             [('fold', '=', False)], order='sequence', limit=1),
+        group_expand='_read_group_stage_ids',
+    )
+
+    partner_id = fields.Many2one(
+        'res.partner',
+        'Contact',
+        help='Contact person for this trip.',
+    )
+
+    user_id = fields.Many2one(
+        'res.users',
+        'Assigned to',
+        help='User assigned to this travel',
     )
 
     @api.multi
