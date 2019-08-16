@@ -207,20 +207,40 @@
 
     <menuitem name="Travel"
               id="menu_travel"
+              sequence="10"
               parent="menu_top_travel" />
 
     <menuitem name="Travels"
               id="menu_travel_travel"
               parent="menu_travel"
+              sequence="10"
               action="action_travels_tree_list"/>
 
     <menuitem id="menu_report"
               name="Reports"
+              sequence="70"
               parent="menu_top_travel"/>
 
     <menuitem id="menu_config"
               name="Configuration"
+              sequence="100"
               groups="travel.group_manager"
               parent="menu_top_travel"/>
+
+
+    <!-- Activity types config -->
+    <record id="mail_activity_type_action_config_travel_types" model="ir.actions.act_window">
+        <field name="name">Activity Types</field>
+        <field name="res_model">mail.activity.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">['|', ('res_model_id', '=', False), ('res_model_id.model', '=', 'travel.travel')]</field>
+        <field name="context">{'default_res_model': 'travel.travel'}</field>
+    </record>
+
+    <menuitem id="menu_config_activity_type"
+        action="mail_activity_type_action_config_travel_types"
+        sequence="80"
+        parent="menu_config"/>
 
 </odoo>

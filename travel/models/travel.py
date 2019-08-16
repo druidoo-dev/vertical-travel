@@ -10,6 +10,7 @@ class Travel(models.Model):
     _name = 'travel.travel'
     _description = 'Travel'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'priority desc, activity_date_deadline, date_start desc, id desc'
     _date_name = "date_start"
 
     @api.model

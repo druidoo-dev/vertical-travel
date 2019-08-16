@@ -19,6 +19,7 @@
         'security/ir.model.access.csv',
         'views/travel.xml',
         'views/travel_stage.xml',
+        'views/travel_tag.xml',
     ],
     'demo': [
         'demo/travel.xml',

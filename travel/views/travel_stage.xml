@@ -1,0 +1,97 @@
+<?xml version = "1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_travel_stage_search" model="ir.ui.view">
+        <field name="model">travel.stage</field>
+        <field name="arch" type="xml">
+            <search>
+               <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_travel_stage_form" model="ir.ui.view">
+        <field name="model">travel.stage</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="fold"/>
+                            <field name="sequence" groups="base.group_no_one"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Add a description..." nolabel="1" colspan="2"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_travel_stage_tree" model="ir.ui.view">
+        <field name="model">travel.stage</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="fold"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_travel_stage_kanban" model="ir.ui.view">
+        <field name="model">travel.stage</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="fold"/>
+                <field name="description"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click">
+                            <div class="row">
+                                <div class="col-12">
+                                    <strong><t t-esc="record.name.value"/></strong>
+                                </div>
+                            </div>
+                            <t t-if="record.description.value">
+                                <hr class="mt8 mb8"/>
+                                <t t-esc="record.description.value"/>
+                            </t>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_travel_stage" model="ir.actions.act_window">
+        <field name="name">Stages</field>
+        <field name="res_model">travel.stage</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create a new stage in the travel pipeline
+          </p><p>
+            Define the steps that will be used in travels.
+            You will use these stages in order to track the progress in
+            managing the travel.
+          </p>
+        </field>
+    </record>
+
+
+    <!-- Menus -->
+    <menuitem name="Stages"
+              id="menu_travel_stage"
+              parent="menu_config"
+              sequence="20"
+              action="action_travel_stage"/>
+
+</odoo>

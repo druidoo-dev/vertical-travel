@@ -1,0 +1,43 @@
+<?xml version = "1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Tags -->
+    <record model="ir.ui.view" id="view_travel_tag_search">
+        <field name="model">travel.tag</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_travel_tag_form">
+        <field name="model">travel.tag</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="name"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_travel_tag" model="ir.actions.act_window">
+        <field name="name">Tags</field>
+        <field name="res_model">travel.tag</field>
+        <field name="view_type">form</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create a new tag
+          </p>
+        </field>
+    </record>
+
+    <!-- Menus -->
+    <menuitem name="Tags"
+              id="menu_travel_tag"
+              parent="menu_config"
+              sequence="30"
+              action="action_travel_tag"/>
+
+</odoo>
