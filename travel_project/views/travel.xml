@@ -1,0 +1,128 @@
+<?xml version = "1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="ir.ui.view" id="travel_form_view">
+        <field name="model">travel.travel</field>
+        <field name="inherit_id" ref="travel.travel_form_view"/>
+        <field name="arch" type="xml">
+
+            <!-- Add project smart buttons -->
+            <button name="toggle_active" position="before">
+                <button class="oe_stat_button" name="attachment_tree_view" type="object" icon="fa-files-o">
+                    <field string="Documents" name="doc_count" widget="statinfo"/>
+                </button>
+                <button class="oe_stat_button" type="action" name="254" icon="fa-tasks">
+                    <field string="Tasks" name="task_count" widget="statinfo" options="{'label_field': 'label_tasks'}"/>
+                </button>
+                <button name="action_view_all_rating" type="object" attrs="{'invisible': ['|', '|', ('rating_status', '=', 'no'), ('percentage_satisfaction_task', '=', -1)]}" class="oe_stat_button oe_percent" icon="fa-smile-o" groups="project.group_project_rating">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="percentage_satisfaction_task" nolabel="1"/>
+                        </span>
+                        <span class="o_stat_text">
+                            % On <field readonly="1" name="label_tasks" options="{'label_field': 'label_tasks'}"/>
+                        </span>
+                    </div>
+                </button>
+            </button>
+
+            <!-- Add project configuration pages -->
+            <notebook position="inside">
+                <page name="settings" string="Settings">
+                    <group>
+                        <!--<field name="user_id" string="Project Manager" attrs="{'readonly':[('active','=',False)]}"/>-->
+                        <field name="privacy_visibility" widget="radio"/>
+                        <field name="partner_id" string="Customer"/>
+                        <label for="rating_status" groups="project.group_project_rating"/>
+                        <div groups="project.group_project_rating">
+                            <field name="rating_status" widget="radio"/>
+                            <p attrs="{'invisible': [('rating_status','not in',('periodic','stage'))]}" class="text-muted oe_edit_only">
+                                Edit project's stages and set an email template on the stages on which you want to activate the rating.
+                            </p>
+                        </div>
+                        <field name="rating_status_period" class="oe_inline" attrs="{'required': [('rating_status','=','periodic')], 'invisible': [('rating_status','!=','periodic')]}" groups="project.group_project_rating"/>
+                        <field name="portal_show_rating" attrs="{'invisible': [('rating_status','==','no')]}" groups="project.group_project_rating"/>
+                        <field name="subtask_project_id" groups="project.group_subtask_project"/>
+                    </group>
+                    <group name="misc">
+                        <group string="Configuration" groups="base.group_no_one" name="configuration">
+                            <field name="sequence" groups="base.group_no_one"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Time Scheduling" groups="base.group_no_one">
+                            <field name="resource_calendar_id" groups="base.group_no_one"/>
+                        </group>
+                    </group>
+                </page>
+                <page name="emails" string="Emails" attrs="{'invisible': [('alias_domain', '=', False)]}">
+                    <group name="group_alias">
+                        <label for="alias_name" string="Email Alias"/>
+                        <div name="alias_def">
+                            <field name="alias_id" class="oe_read_only oe_inline" string="Email Alias" required="0"/>
+                            <div class="oe_edit_only oe_inline" name="edit_alias" style="display: inline;">
+                                <field name="alias_name" class="oe_inline"/>@<field name="alias_domain" class="oe_inline" readonly="1"/>
+                            </div>
+                        </div>
+                        <field name="alias_contact" class="oe_inline oe_edit_only" string="Accept Emails From"/>
+                    </group>
+                </page>
+            </notebook>
+
+        </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="view_project_kanban">
+        <field name="inherit_id" ref="travel.view_project_kanban"/>
+        <field name="model">travel.travel</field>
+        <field name="arch" type="xml">
+
+            <field name="user_id" position="after">
+                <field name="alias_id"/>
+                <field name="alias_name"/>
+                <field name="alias_domain"/>
+                <field name="rating_status"/>
+                <field name="percentage_satisfaction_project"/>
+                <field name="percentage_satisfaction_task"/>
+                <field name="task_count"/>
+                <field name="label_tasks"/>
+            </field>
+
+            <xpath expr="//div[hasclass('o_kanban_primary_left')]" position="inside">
+                <div t-if="record.alias_name.value and record.alias_domain.value">
+                    <span><i class="fa fa-envelope" role="img" aria-label="Domain Alias" title="Domain Alias"/> <t t-esc="record.alias_id.value"/></span>
+                </div>
+                <div t-if="record.rating_status.raw_value != 'no'" class="mt8 text-primary" title="Percentage of happy ratings over the past 30 days. Get rating details from the More menu." groups="project.group_project_rating">
+                    <b>
+                        <t t-if="record.percentage_satisfaction_project.value == -1">
+                            <i class="fa fa-smile-o"/> No rating yet
+                        </t>
+                        <t t-if="record.percentage_satisfaction_project.value != -1">
+                            <a name="action_view_all_rating" type="object" context="{'search_default_rating_last_30_days':1}">
+                                <i class="fa fa-smile-o" role="img" aria-label="Percentage of satisfaction" title="Percentage of satisfaction"/> <t t-esc="record.percentage_satisfaction_project.value"/>%
+                            </a>
+                        </t>
+                    </b>
+                </div>
+            </xpath>
+
+            <xpath expr="//div[hasclass('o_kanban_card_manage_pane')]/div[hasclass('o_kanban_card_manage_section')]" position="after">
+                <div role="menuitem" t-if="record.rating_status.raw_value != 'no'">
+                    <a name="action_view_all_rating" type="object">Customer Ratings</a>
+                </div>
+            </xpath>
+
+            <xpath expr="//div[hasclass('o_kanban_record_bottom')]" position="before">
+                <div class="o_project_kanban_boxes" style="margin-bottom: 0.5em;">
+                    <a class="o_project_kanban_box" name="action_view_tasks" type="object">
+                        <div>
+                            <span class="o_value"><t t-esc="record.task_count.value"/></span>
+                            <span class="o_label"><t t-esc="record.label_tasks.value"/></span>
+                        </div>
+                    </a>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
