@@ -10,7 +10,7 @@ class Travel(models.Model):
     _name = 'travel.travel'
     _description = 'Travel'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _order = 'priority desc, activity_date_deadline, date_start desc, id desc'
+    _order = 'priority desc, sequence, activity_date_deadline, date_start desc'
     _date_name = "date_start"
 
     @api.model
@@ -20,6 +20,7 @@ class Travel(models.Model):
     name = fields.Char(required=True)
     description = fields.Html()
 
+    sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
 
     tag_ids = fields.Many2many('travel.tag', string='Tags')
@@ -40,6 +41,7 @@ class Travel(models.Model):
         required=True,
         default=lambda self: self.env.user.company_id,
     )
+
     currency_id = fields.Many2one(related="company_id.currency_id")
 
     date_start = fields.Date('Start Date', required=True)
@@ -85,3 +87,9 @@ class Travel(models.Model):
             if rec.date_start > rec.date_stop:
                 raise ValidationError(
                     _('Start date cannot be after departure date.'))
+
+    @api.onchange('date_start')
+    def _onchange_date_start(self):
+        for rec in self:
+            if rec.date_start and not rec.date_end:
+                rec.date_end = rec.date_start
