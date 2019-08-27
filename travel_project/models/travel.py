@@ -56,6 +56,9 @@ class Travel(models.Model):
     def action_view_all_rating(self):
         return self.project_id.action_view_all_rating()
 
+    def attachment_tree_view(self):
+        return self.project_id.attachment_tree_view()
+
     def action_view_tasks(self):
         self.ensure_one()
         act = self.env.ref('project.act_project_project_2_project_task_all')
@@ -65,3 +68,31 @@ class Travel(models.Model):
             'default_project_id': self.project_id.id,
         }
         return act
+
+    # mail.thread unification
+
+    def _message_subscribe(
+        self,
+        partner_ids=None, channel_ids=None,
+        subtype_ids=None, customer_ids=None
+    ):
+        self.mapped('project_id')._message_subscribe(
+            partner_ids=partner_ids,
+            channel_ids=channel_ids,
+            subtype_ids=subtype_ids,
+            customer_ids=customer_ids,
+        )
+        return super()._message_subscribe(
+            partner_ids=partner_ids,
+            channel_ids=channel_ids,
+            subtype_ids=subtype_ids,
+            customer_ids=customer_ids,
+        )
+
+    def message_unsubscribe(self, partner_ids=None, channel_ids=None):
+        self.mapped('project_id').message_unsubscribe(
+            partner_ids=partner_ids,
+            channel_ids=channel_ids)
+        return super().message_unsubscribe(
+            partner_ids=partner_ids,
+            channel_ids=channel_ids)
