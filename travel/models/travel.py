@@ -91,5 +91,8 @@ class Travel(models.Model):
     @api.onchange('date_start')
     def _onchange_date_start(self):
         for rec in self:
-            if rec.date_start and not rec.date_end:
-                rec.date_end = rec.date_start
+            if rec.date_start and (
+                not rec.date_stop or
+                (rec.date_stop and rec.date_start > rec.date_stop)
+            ):
+                rec.date_stop = rec.date_start
