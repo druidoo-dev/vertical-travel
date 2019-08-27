@@ -53,16 +53,6 @@
                         <page name="description" string="Description">
                             <field name="description"/>
                         </page>
-                        <page name="other" string="Other information">
-                            <group>
-                                <group>
-                                    <field name="user_id"/>
-                                </group>
-                                <group>
-                                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
-                                </group>
-                            </group>
-                        </page>
                         <page name="passengers" string="Passengers">
                             <field name="passenger_ids">
                                 <tree editable="bottom">
@@ -78,6 +68,16 @@
                                     </sheet>
                                 </form>
                             </field>
+                        </page>
+                        <page name="settings" string="Settings">
+                            <group>
+                                <group>
+                                    <field name="user_id"/>
+                                </group>
+                                <group>
+                                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                                </group>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
